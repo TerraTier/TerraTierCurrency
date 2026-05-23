@@ -42,7 +42,7 @@ jobs:
           path: build/libs/TerraTierCurrency.jar
 
       - name: Validate SFTP secrets
-        shell: pwsh
+        shell: powershell
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
@@ -60,11 +60,11 @@ jobs:
           }
 
       - name: Install WinSCP
-        shell: pwsh
+        shell: powershell
         run: choco install winscp -y --no-progress
 
       - name: Deploy over SFTP
-        shell: pwsh
+        shell: powershell
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_PORT: ${{ secrets.SFTP_PORT }}
