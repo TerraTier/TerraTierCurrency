@@ -41,6 +41,24 @@ jobs:
           name: TerraTierCurrency
           path: build/libs/TerraTierCurrency.jar
 
+      - name: Validate SFTP secrets
+        shell: pwsh
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+        run: |
+          $missing = @()
+          if (-not $env:SFTP_HOST) { $missing += "SFTP_HOST" }
+          if (-not $env:SFTP_USERNAME) { $missing += "SFTP_USERNAME" }
+          if (-not $env:SFTP_PASSWORD) { $missing += "SFTP_PASSWORD" }
+          if (-not $env:SFTP_REMOTE_DIR) { $missing += "SFTP_REMOTE_DIR" }
+
+          if ($missing.Count -gt 0) {
+            throw "Missing required GitHub Actions secrets: $($missing -join ', ')"
+          }
+
       - name: Install WinSCP
         shell: pwsh
         run: choco install winscp -y --no-progress
@@ -65,14 +83,16 @@ jobs:
           }
 
           $scriptPath = Join-Path $env:RUNNER_TEMP "winscp-script.txt"
-          @"
-          option batch abort
-          option confirm off
-          open sftp://$($env:SFTP_USERNAME)@$($env:SFTP_HOST):$($env:SFTP_PORT)/ -password="$($env:SFTP_PASSWORD)" -hostkey="$hostKey"
-          cd "$($env:SFTP_REMOTE_DIR)"
-          put "build\libs\TerraTierCurrency.jar"
-          close
-          exit
-          "@ | Set-Content -Path $scriptPath -Encoding ASCII
+          $script = @(
+            "option batch abort",
+            "option confirm off",
+            "open sftp://$($env:SFTP_USERNAME)@$($env:SFTP_HOST):$($env:SFTP_PORT)/ -password=`"$($env:SFTP_PASSWORD)`" -hostkey=`"$hostKey`"",
+            "cd `"$($env:SFTP_REMOTE_DIR)`"",
+            "put `"build\libs\TerraTierCurrency.jar`"",
+            "close",
+            "exit"
+          )
+
+          $script | Set-Content -Path $scriptPath -Encoding ASCII
 
           & "C:\Program Files (x86)\WinSCP\WinSCP.com" /script="$scriptPath"
