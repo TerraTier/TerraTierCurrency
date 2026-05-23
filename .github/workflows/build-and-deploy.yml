@@ -77,22 +77,37 @@ jobs:
             $env:SFTP_PORT = "22"
           }
 
-          $hostKey = $env:SFTP_HOSTKEY
-          if (-not $hostKey) {
-            $hostKey = "*"
+          Add-Type -Path "C:\Program Files (x86)\WinSCP\WinSCPnet.dll"
+
+          $sessionOptions = New-Object WinSCP.SessionOptions -Property @{
+            Protocol = [WinSCP.Protocol]::Sftp
+            HostName = $env:SFTP_HOST
+            PortNumber = [int]$env:SFTP_PORT
+            UserName = $env:SFTP_USERNAME
+            Password = $env:SFTP_PASSWORD
           }
 
-          $scriptPath = Join-Path $env:RUNNER_TEMP "winscp-script.txt"
-          $script = @(
-            "option batch abort",
-            "option confirm off",
-            "open sftp://$($env:SFTP_USERNAME)@$($env:SFTP_HOST):$($env:SFTP_PORT)/ -password=`"$($env:SFTP_PASSWORD)`" -hostkey=`"$hostKey`"",
-            "cd `"$($env:SFTP_REMOTE_DIR)`"",
-            "put `"build\libs\TerraTierCurrency.jar`"",
-            "close",
-            "exit"
-          )
+          if ($env:SFTP_HOSTKEY) {
+            $sessionOptions.SshHostKeyFingerprint = $env:SFTP_HOSTKEY
+          } else {
+            $sessionOptions.GiveUpSecurityAndAcceptAnySshHostKey = $true
+          }
 
-          $script | Set-Content -Path $scriptPath -Encoding ASCII
+          $session = New-Object WinSCP.Session
+          try {
+            $session.Open($sessionOptions)
 
-          & "C:\Program Files (x86)\WinSCP\WinSCP.com" /script="$scriptPath"
+            $transferOptions = New-Object WinSCP.TransferOptions
+            $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
+
+            $result = $session.PutFiles(
+              "build\libs\TerraTierCurrency.jar",
+              "$($env:SFTP_REMOTE_DIR.TrimEnd('/'))/TerraTierCurrency.jar",
+              $false,
+              $transferOptions
+            )
+
+            $result.Check()
+          } finally {
+            $session.Dispose()
+          }
