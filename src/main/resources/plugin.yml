@@ -1,0 +1,22 @@
+main: com.terratier.currency.TerraTierCurrency
+version: ${version}
+name: TerraTierCurrency
+author: TerraTier
+api-version: 1.21
+depend: [WorldGuard]
+soft-depend: [TerraTierMining]
+
+commands:
+  terratiercurrency:
+    description: Manage player currency balances
+    usage: /<command> [view|add|subtract|set] [player] [currency] [amount]
+    aliases: [balance, coins]
+  ttc:
+    description: Alias of terratiercurrency
+    usage: /<command> [view|add|subtract|set] [player] [currency] [amount]
+    aliases: [balance, coins]
+
+permissions:
+  terratier.currency.admin:
+    description: Allows adding, subtracting, or setting player currency balances
+    default: op

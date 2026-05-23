@@ -1,0 +1,7 @@
+currencies:
+  coins:
+    display-name: Coins
+    icon: "\uD83D\uDCB0"
+  total-coins:
+    display-name: Total Coins
+    icon: "\uD83D\uDCB0"
