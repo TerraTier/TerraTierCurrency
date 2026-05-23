@@ -1,0 +1,78 @@
+name: Build and Deploy
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build
+        shell: pwsh
+        run: .\gradlew.bat build
+
+      - name: Prepare deploy jar
+        shell: pwsh
+        run: |
+          $jar = Get-ChildItem -Path build\libs -Filter "TerraTierCurrency-*.jar" |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+
+          if (-not $jar) {
+            throw "No TerraTierCurrency jar was built."
+          }
+
+          Copy-Item -LiteralPath $jar.FullName -Destination build\libs\TerraTierCurrency.jar -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TerraTierCurrency
+          path: build/libs/TerraTierCurrency.jar
+
+      - name: Install WinSCP
+        shell: pwsh
+        run: choco install winscp -y --no-progress
+
+      - name: Deploy over SFTP
+        shell: pwsh
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_REMOTE_DIR: ${{ secrets.SFTP_REMOTE_DIR }}
+          SFTP_HOSTKEY: ${{ secrets.SFTP_HOSTKEY }}
+        run: |
+          if (-not $env:SFTP_PORT) {
+            $env:SFTP_PORT = "22"
+          }
+
+          $hostKey = $env:SFTP_HOSTKEY
+          if (-not $hostKey) {
+            $hostKey = "*"
+          }
+
+          $scriptPath = Join-Path $env:RUNNER_TEMP "winscp-script.txt"
+          @"
+          option batch abort
+          option confirm off
+          open sftp://$($env:SFTP_USERNAME)@$($env:SFTP_HOST):$($env:SFTP_PORT)/ -password="$($env:SFTP_PASSWORD)" -hostkey="$hostKey"
+          cd "$($env:SFTP_REMOTE_DIR)"
+          put "build\libs\TerraTierCurrency.jar"
+          close
+          exit
+          "@ | Set-Content -Path $scriptPath -Encoding ASCII
+
+          & "C:\Program Files (x86)\WinSCP\WinSCP.com" /script="$scriptPath"

@@ -130,5 +130,30 @@ Add additional currencies by adding entries under `currencies`.
 .\gradlew.bat clean build
 ```
 
+## GitHub Actions Deployment
+The repository includes `.github/workflows/build-and-deploy.yml`.
+
+On every push, it:
+
+- Checks out the repository
+- Sets up Java 21
+- Runs `.\gradlew.bat build`
+- Copies the versioned jar to `build/libs/TerraTierCurrency.jar`
+- Uploads that jar as a GitHub Actions artifact
+- Deploys `TerraTierCurrency.jar` to your server over SFTP
+
+Add these repository secrets in GitHub under `Settings > Secrets and variables > Actions`:
+
+```text
+SFTP_HOST
+SFTP_PORT
+SFTP_USERNAME
+SFTP_PASSWORD
+SFTP_REMOTE_DIR
+SFTP_HOSTKEY
+```
+
+`SFTP_PORT` defaults to `22` if omitted. `SFTP_HOSTKEY` is recommended, but if omitted the workflow will allow any host key.
+
 ## Support
 Open an issue in the repository or ask on the TerraTier Discord for help.
