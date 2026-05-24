@@ -26,7 +26,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
  * Handles the /currency command and supports viewing or modifying currency balances.
  */
 public class CurrencyCommand implements CommandExecutor, TabCompleter {
-    private static final String DEFAULT_CURRENCY = "coins";
+    private static final String DEFAULT_CURRENCY = CurrencyIds.COINS;
 
     private final CurrencyManager currencyManager = CurrencyManager.getInstance();
     private final CurrencyList currencyList = CurrencyList.getInstance();

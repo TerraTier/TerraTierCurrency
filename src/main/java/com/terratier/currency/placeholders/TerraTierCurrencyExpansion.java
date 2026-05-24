@@ -1,6 +1,7 @@
 package com.terratier.currency.placeholders;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.bukkit.OfflinePlayer;
@@ -12,11 +13,9 @@ import com.terratier.currency.managers.CurrencyManager;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 public class TerraTierCurrencyExpansion extends PlaceholderExpansion {
-    private static final DecimalFormat WHOLE_NUMBER_FORMAT = new DecimalFormat("#,##0");
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,##0.##");
-
     private final TerraTierCurrency plugin;
     private final CurrencyManager currencyManager;
+    private final DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(Locale.US);
 
     public TerraTierCurrencyExpansion(TerraTierCurrency plugin, CurrencyManager currencyManager) {
         this.plugin = plugin;
@@ -67,10 +66,10 @@ public class TerraTierCurrencyExpansion extends PlaceholderExpansion {
     }
 
     private String formatWhole(double value) {
-        return WHOLE_NUMBER_FORMAT.format(value);
+        return new DecimalFormat("#,##0", symbols).format(value);
     }
 
     private String formatDecimal(double value) {
-        return DECIMAL_FORMAT.format(value);
+        return new DecimalFormat("#,##0.##", symbols).format(value);
     }
 }

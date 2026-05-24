@@ -1,8 +1,10 @@
 package com.terratier.currency;
 
 import java.io.File;
+
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
@@ -13,10 +15,10 @@ import com.terratier.currency.commands.CurrencyCommand;
 import com.terratier.currency.config.CurrencyConfig;
 import com.terratier.currency.currency.CurrencyList;
 import com.terratier.currency.listeners.CoinRegionListener;
+import com.terratier.currency.listeners.PlayerListener;
 import com.terratier.currency.managers.CurrencyManager;
 import com.terratier.currency.managers.PluginManager;
 import com.terratier.currency.placeholders.TerraTierCurrencyExpansion;
-import com.terratier.currency.listeners.PlayerListener;
 
 public class TerraTierCurrency extends JavaPlugin {
     public static IntegerFlag REQUIRED_TOTAL_COINS_FLAG;
@@ -66,16 +68,16 @@ public class TerraTierCurrency extends JavaPlugin {
             new TerraTierCurrencyExpansion(this, currencyManager).register();
             getLogger().info("Registered PlaceholderAPI placeholders.");
         }
-            // Register commands and tab completer for terratiercurrency and ttc
-            com.terratier.currency.commands.CurrencyCommand cmd = new com.terratier.currency.commands.CurrencyCommand();
-            if (getCommand("terratiercurrency") != null) {
-                getCommand("terratiercurrency").setExecutor(cmd);
-                getCommand("terratiercurrency").setTabCompleter(cmd);
-            }
-            if (getCommand("ttc") != null) {
-                getCommand("ttc").setExecutor(cmd);
-                getCommand("ttc").setTabCompleter(cmd);
-            }
+
+        CurrencyCommand cmd = new CurrencyCommand();
+        if (getCommand("terratiercurrency") != null) {
+            getCommand("terratiercurrency").setExecutor(cmd);
+            getCommand("terratiercurrency").setTabCompleter(cmd);
+        }
+        if (getCommand("ttc") != null) {
+            getCommand("ttc").setExecutor(cmd);
+            getCommand("ttc").setTabCompleter(cmd);
+        }
 
         getLogger().info("TerraTierCurrency enabled with " + currencyList.getAllCurrencies().size() + " currency types.");
     }

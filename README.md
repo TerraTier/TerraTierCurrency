@@ -10,6 +10,21 @@ TerraTierCurrency is a lightweight, configurable currency plugin for Paper (Mine
 - WorldGuard flag: `required-total-coins`
 - Balances persisted to `plugins/TerraTierCurrency/balances.yml`
 
+## Requirements
+- Paper 1.21.x
+- Java 21
+- WorldGuard
+- WorldEdit (required by WorldGuard)
+- PlaceholderAPI (optional, for scoreboard/placeholders)
+- SimpleScore (optional, for scoreboard display)
+
+## Installation
+1. Build or download `TerraTierCurrency.jar`.
+2. Place it in your server's `plugins` folder.
+3. Make sure WorldGuard and WorldEdit are installed.
+4. Restart the server.
+5. Edit `plugins/TerraTierCurrency/config.yml` if you want additional currencies.
+
 ## Usage
 - `/terratiercurrency` or `/ttc` - show your balances (lists all configured currencies)
 - `/terratiercurrency view <player>` - view another player's balances
@@ -64,7 +79,7 @@ Compile against the TerraTierCurrency jar:
 
 ```gradle
 dependencies {
-    compileOnly files("libs/TerraTierCurrency-1.0.1.jar")
+    compileOnly files("libs/TerraTierCurrency.jar")
 }
 ```
 
@@ -150,10 +165,17 @@ Add additional currencies by adding entries under `currencies`.
 
 ## Development
 - Paper API target: `1.21.11-R0.1-SNAPSHOT` (set in `build.gradle`)
-- To run a build locally:
+- Build output: `build/libs/TerraTierCurrency.jar`
+- To run a build locally on Windows:
 
 ```powershell
 .\gradlew.bat clean build
+```
+
+- To run a build locally on Linux/macOS:
+
+```bash
+./gradlew clean build
 ```
 
 ## GitHub Actions Deployment
@@ -164,7 +186,6 @@ On every push, it:
 - Checks out the repository
 - Sets up Java 21
 - Runs `.\gradlew.bat build`
-- Copies the versioned jar to `build/libs/TerraTierCurrency.jar`
 - Uploads that jar as a GitHub Actions artifact
 - Deploys `TerraTierCurrency.jar` to your server over SFTP
 
@@ -180,6 +201,13 @@ SFTP_HOSTKEY
 ```
 
 `SFTP_PORT` defaults to `22` if omitted. `SFTP_HOSTKEY` is recommended, but if omitted the workflow will allow any host key.
+
+By default this workflow deploys on every push. If you only want production deployments from `main`, restrict the workflow trigger to the `main` branch.
+
+## Repository Notes
+- Commit source files, Gradle wrapper files, README/docs, and workflow files.
+- Do not commit `build/`, `.gradle/`, `bin/`, or generated plugin jars.
+- Choose and add a `LICENSE` file before making the repository public if TerraTier wants this to be open source.
 
 ## Support
 Open an issue in the repository or ask on the TerraTier Discord for help.

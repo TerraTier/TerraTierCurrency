@@ -1,0 +1,22 @@
+name: Feature Request
+description: Suggest an improvement for TerraTierCurrency
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What should be improved?
+      description: Describe the feature or workflow you want to support.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Suggested solution
+      description: Share any command, config, API, or behavior ideas.
+  - type: textarea
+    id: context
+    attributes:
+      label: Extra context
+      description: Add screenshots, server setup details, or related plugin links.
