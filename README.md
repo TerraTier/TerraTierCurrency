@@ -178,32 +178,6 @@ Add additional currencies by adding entries under `currencies`.
 ./gradlew clean build
 ```
 
-## GitHub Actions Deployment
-The repository includes `.github/workflows/build-and-deploy.yml`.
-
-On every push, it:
-
-- Checks out the repository
-- Sets up Java 21
-- Runs `.\gradlew.bat build`
-- Uploads that jar as a GitHub Actions artifact
-- Deploys `TerraTierCurrency.jar` to your server over SFTP
-
-Add these repository secrets in GitHub under `Settings > Secrets and variables > Actions`:
-
-```text
-SFTP_HOST
-SFTP_PORT
-SFTP_USERNAME
-SFTP_PASSWORD
-SFTP_REMOTE_DIR
-SFTP_HOSTKEY
-```
-
-`SFTP_PORT` defaults to `22` if omitted. `SFTP_HOSTKEY` is recommended, but if omitted the workflow will allow any host key.
-
-By default this workflow deploys on every push. If you only want production deployments from `main`, restrict the workflow trigger to the `main` branch.
-
 ## Repository Notes
 - Commit source files, Gradle wrapper files, README/docs, and workflow files.
 - Do not commit `build/`, `.gradle/`, `bin/`, or generated plugin jars.
