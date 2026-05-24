@@ -7,6 +7,10 @@ plugins {
 group = 'com.terratier.currency'
 version = '1.0.1'
 
+tasks.withType(Jar).configureEach {
+    archiveFileName = 'TerraTierCurrency.jar'
+}
+
 repositories {
     mavenCentral()
     maven {

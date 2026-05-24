@@ -22,19 +22,6 @@ jobs:
         shell: pwsh
         run: .\gradlew.bat build
 
-      - name: Prepare deploy jar
-        shell: pwsh
-        run: |
-          $jar = Get-ChildItem -Path build\libs -Filter "TerraTierCurrency-*.jar" |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-
-          if (-not $jar) {
-            throw "No TerraTierCurrency jar was built."
-          }
-
-          Copy-Item -LiteralPath $jar.FullName -Destination build\libs\TerraTierCurrency.jar -Force
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -99,9 +86,13 @@ jobs:
 
             $transferOptions = New-Object WinSCP.TransferOptions
             $transferOptions.TransferMode = [WinSCP.TransferMode]::Binary
+            $localJar = Join-Path $env:GITHUB_WORKSPACE "build\libs\TerraTierCurrency.jar"
+            if (-not (Test-Path -LiteralPath $localJar)) {
+              throw "Deploy jar does not exist at $localJar"
+            }
 
             $result = $session.PutFiles(
-              "build\libs\TerraTierCurrency.jar",
+              $localJar,
               "$($env:SFTP_REMOTE_DIR.TrimEnd('/'))/TerraTierCurrency.jar",
               $false,
               $transferOptions
