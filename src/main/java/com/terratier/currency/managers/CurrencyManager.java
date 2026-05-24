@@ -33,7 +33,7 @@ public class CurrencyManager {
         return instance;
     }
 
-    public void loadBalances(File file) {
+    public synchronized void loadBalances(File file) {
         if (!file.exists()) {
             return;
         }
@@ -62,7 +62,7 @@ public class CurrencyManager {
         }
     }
 
-    public void saveBalances(File file) {
+    public synchronized void saveBalances(File file) {
         FileConfiguration config = new YamlConfiguration();
         ConfigurationSection balancesSection = config.createSection("balances");
         for (Map.Entry<UUID, Map<String, Double>> playerEntry : playerCurrencies.entrySet()) {
@@ -81,7 +81,7 @@ public class CurrencyManager {
         }
     }
 
-    public void ensurePlayerData(UUID playerUUID) {
+    public synchronized void ensurePlayerData(UUID playerUUID) {
         Map<String, Double> currencies = playerCurrencies.computeIfAbsent(playerUUID, k -> new HashMap<>());
         mergeLegacyCoinBalance(currencies);
         for (Currency currency : CurrencyList.getInstance().getAllCurrencies().values()) {
@@ -95,7 +95,7 @@ public class CurrencyManager {
      * @param currencyId The currency ID
      * @return The balance, or 0 if the player/currency doesn't exist
      */
-    public double getBalance(UUID playerUUID, String currencyId) {
+    public synchronized double getBalance(UUID playerUUID, String currencyId) {
         return playerCurrencies
             .getOrDefault(playerUUID, new HashMap<>())
             .getOrDefault(CurrencyIds.normalize(currencyId), 0.0);
@@ -107,7 +107,7 @@ public class CurrencyManager {
      * @param currencyId The currency ID
      * @param amount The amount to set
      */
-    public void setBalance(UUID playerUUID, String currencyId, double amount) {
+    public synchronized void setBalance(UUID playerUUID, String currencyId, double amount) {
         amount = Math.max(0, amount); // Prevent negative balances
         playerCurrencies
             .computeIfAbsent(playerUUID, k -> new HashMap<>())
@@ -120,7 +120,7 @@ public class CurrencyManager {
      * @param currencyId The currency ID
      * @param amount The amount to add
      */
-    public void addBalance(UUID playerUUID, String currencyId, double amount) {
+    public synchronized void addBalance(UUID playerUUID, String currencyId, double amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("Amount must be positive. Use subtractBalance for subtraction.");
         }
@@ -140,7 +140,7 @@ public class CurrencyManager {
      * @param amount The amount to subtract
      * @return true if successful, false if player has insufficient balance
      */
-    public boolean subtractBalance(UUID playerUUID, String currencyId, double amount) {
+    public synchronized boolean subtractBalance(UUID playerUUID, String currencyId, double amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("Amount must be positive. Use addBalance for addition.");
         }
@@ -159,7 +159,7 @@ public class CurrencyManager {
      * @param amount The amount to check
      * @return true if the player has enough balance
      */
-    public boolean hasBalance(UUID playerUUID, String currencyId, double amount) {
+    public synchronized boolean hasBalance(UUID playerUUID, String currencyId, double amount) {
         return getBalance(playerUUID, currencyId) >= amount;
     }
 

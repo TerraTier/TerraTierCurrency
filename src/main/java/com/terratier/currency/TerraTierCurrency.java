@@ -15,6 +15,7 @@ import com.terratier.currency.currency.CurrencyList;
 import com.terratier.currency.listeners.CoinRegionListener;
 import com.terratier.currency.managers.CurrencyManager;
 import com.terratier.currency.managers.PluginManager;
+import com.terratier.currency.placeholders.TerraTierCurrencyExpansion;
 import com.terratier.currency.listeners.PlayerListener;
 
 public class TerraTierCurrency extends JavaPlugin {
@@ -61,6 +62,10 @@ public class TerraTierCurrency extends JavaPlugin {
         );
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getServer().getPluginManager().registerEvents(new CoinRegionListener(), this);
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new TerraTierCurrencyExpansion(this, currencyManager).register();
+            getLogger().info("Registered PlaceholderAPI placeholders.");
+        }
             // Register commands and tab completer for terratiercurrency and ttc
             com.terratier.currency.commands.CurrencyCommand cmd = new com.terratier.currency.commands.CurrencyCommand();
             if (getCommand("terratiercurrency") != null) {

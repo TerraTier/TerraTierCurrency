@@ -4,7 +4,7 @@ name: TerraTierCurrency
 author: TerraTier
 api-version: 1.21
 depend: [WorldGuard]
-soft-depend: [TerraTierMining]
+soft-depend: [TerraTierMining, PlaceholderAPI]
 
 commands:
   terratiercurrency:

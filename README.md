@@ -31,6 +31,32 @@ Require a player to have at least 50 lifetime coins before entering a region:
 /rg flag <region> required-total-coins 50
 ```
 
+## PlaceholderAPI / SimpleScore
+TerraTierCurrency registers PlaceholderAPI placeholders when PlaceholderAPI is installed.
+
+Available placeholders:
+
+```text
+%terratiercurrency_coins%
+%terratiercurrency_coins_decimal%
+%terratiercurrency_total_coins%
+%terratiercurrency_total_coins_decimal%
+```
+
+For SimpleScore, add the placeholders to your scoreboard lines. Example:
+
+```yaml
+scoreboards:
+  main:
+    titles:
+      - "<gold>TerraTier"
+    lines:
+      - "<gray>Coins: <white>%terratiercurrency_coins%"
+      - "<gray>Total Coins: <white>%terratiercurrency_total_coins%"
+```
+
+Install `PlaceholderAPI` alongside `SimpleScore` and `TerraTierCurrency`. No eCloud expansion download is needed because the placeholders are built into TerraTierCurrency.
+
 ## Developer API
 Other Paper plugins can access TerraTierCurrency through the server services manager.
 

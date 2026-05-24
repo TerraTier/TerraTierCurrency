@@ -91,9 +91,16 @@ jobs:
               throw "Deploy jar does not exist at $localJar"
             }
 
+            $remoteDir = $env:SFTP_REMOTE_DIR.Replace("\", "/").TrimEnd("/")
+            try {
+              $session.GetFileInfo($remoteDir) | Out-Null
+            } catch {
+              throw "Remote directory does not exist or is not accessible through this SFTP login: $remoteDir"
+            }
+
             $result = $session.PutFiles(
               $localJar,
-              "$($env:SFTP_REMOTE_DIR.TrimEnd('/'))/TerraTierCurrency.jar",
+              "$remoteDir/TerraTierCurrency.jar",
               $false,
               $transferOptions
             )
